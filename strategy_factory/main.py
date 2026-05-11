@@ -653,19 +653,13 @@ Examples:
 
     def _check_api_keys(self) -> bool:
         """Check if required API keys are set."""
-        missing = []
-
-        if not os.getenv("PERPLEXITY_API_KEY"):
-            missing.append("PERPLEXITY_API_KEY")
-
-        if not os.getenv("GEMINI_API_KEY"):
-            missing.append("GEMINI_API_KEY")
-
-        if missing:
-            print("Error: Missing required API keys:")
-            for key in missing:
-                print(f"  - {key}")
-            print("\nSet these in your .env file or environment.")
+        if not os.getenv("OPENROUTER_API_KEY"):
+            print("Error: Missing required API key:")
+            print("  - OPENROUTER_API_KEY")
+            print(
+                "\nSet this in your .env file or environment. "
+                "Get a key at https://openrouter.ai/keys"
+            )
             return False
 
         return True

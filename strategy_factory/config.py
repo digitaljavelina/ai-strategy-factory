@@ -13,7 +13,16 @@ TLDR_GUIDES_DIR = PROJECT_ROOT / "Consulting Guides TLDR"
 PROGRESS_DIR = PROJECT_ROOT / "progress"
 
 # API Configuration
-GEMINI_MODEL = "gemini-2.5-flash"
+# All Gemini and Perplexity model calls are routed through OpenRouter, so model
+# IDs use OpenRouter's `<provider>/<model>` naming.
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+OPENROUTER_PERPLEXITY_PREFIX = "perplexity/"
+OPENROUTER_GEMINI_PREFIX = "google/"
+# Optional headers OpenRouter uses for app attribution on the rankings page.
+OPENROUTER_HTTP_REFERER = "https://github.com/digitaljavelina/ai-strategy-factory"
+OPENROUTER_APP_TITLE = "AI Strategy Factory"
+
+GEMINI_MODEL = f"{OPENROUTER_GEMINI_PREFIX}gemini-2.5-flash"
 GEMINI_REQUEST_DELAY = 5  # seconds between requests
 
 # Perplexity models and their use cases

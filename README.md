@@ -33,7 +33,7 @@ Enter a company name → Get a complete AI strategy package:
 | **Executive Presentations** | PowerPoint decks ready for stakeholders |
 | **Implementation Reports** | Detailed Word documents with recommendations |
 
-**Cost per analysis: ~$0.05-0.50** using Perplexity + Gemini APIs
+**Cost per analysis: ~$0.05-0.50** using Perplexity Sonar + Google Gemini, billed through a single OpenRouter API key.
 
 ---
 
@@ -58,7 +58,7 @@ This tool is like having a consulting firm in a box. You type in a company name 
 |------|-----|-----------------|
 | A computer | Windows, Mac, or Linux all work | You probably have this |
 | Python installed | The programming language this runs on | 5 minutes |
-| Two free API keys | To use Perplexity and Gemini AI | 10 minutes |
+| One OpenRouter API key | Single key gives access to Perplexity and Gemini | 5 minutes |
 | Claude Code (optional) | Makes everything 10x easier | 2 minutes |
 
 ### The Absolute Easiest Way (Using Claude Code)
@@ -93,22 +93,21 @@ Claude Code will:
 3. **IMPORTANT:** Check the box that says "Add Python to PATH"
 4. Click Install
 
-#### Step 2: Get Your API Keys (10 minutes)
+#### Step 2: Get Your API Key (5 minutes)
 
-You need two free API keys:
+You only need a single OpenRouter API key. OpenRouter is a unified gateway
+that routes requests to many model providers — including Perplexity Sonar
+(used for research) and Google Gemini (used for document synthesis) — and
+bills them all through one account.
 
-**Perplexity API Key:**
-1. Go to [perplexity.ai](https://perplexity.ai)
-2. Create an account (free)
-3. Go to Settings → API
-4. Click "Generate API Key"
-5. Copy it somewhere safe (looks like `pplx-abc123...`)
-
-**Gemini API Key:**
-1. Go to [aistudio.google.com/apikey](https://aistudio.google.com/apikey)
-2. Sign in with Google
-3. Click "Create API Key"
-4. Copy it somewhere safe (looks like `AIzaSy...`)
+**OpenRouter API Key:**
+1. Go to [openrouter.ai](https://openrouter.ai)
+2. Create an account (free; sign in with Google/GitHub)
+3. Go to [openrouter.ai/keys](https://openrouter.ai/keys)
+4. Click "Create Key"
+5. Copy it somewhere safe (looks like `sk-or-v1-...`)
+6. Add credits at [openrouter.ai/credits](https://openrouter.ai/credits)
+   — even $5 is more than enough to run several analyses.
 
 #### Step 3: Download This Project (2 minutes)
 
@@ -137,9 +136,9 @@ git clone https://github.com/promptadvisers/ai-strategy-factory.git
    python3 setup.py   # On Mac
    ```
 
-4. Add your API keys:
+4. Add your API key:
    - Open the `.env` file in any text editor
-   - Replace the placeholder text with your actual keys
+   - Replace the `OPENROUTER_API_KEY` placeholder with your actual key
    - Save the file
 
 #### Step 5: Run It! (1 minute)
@@ -185,9 +184,9 @@ Once you have the project set up, here are things you can ask Claude Code to do:
 - Try restarting your terminal/command prompt
 
 **"API key error"**
-- Double-check your `.env` file has the right keys
-- Make sure there are no extra spaces
-- Make sure the keys are on their own lines
+- Double-check your `.env` file has the right key
+- Make sure the line starts with `OPENROUTER_API_KEY=` and has no extra spaces
+- Make sure your OpenRouter account has credits
 
 **"Module not found"**
 - Run `pip install -r requirements.txt` again
@@ -199,7 +198,7 @@ Once you have the project set up, here are things you can ask Claude Code to do:
 
 ### You've Got This!
 
-Seriously, the hardest part is getting the API keys. Once those are set up, it's just clicking buttons. And if you have Claude Code, it can literally do all of this for you.
+Seriously, the hardest part is getting the API key. Once it's set up, it's just clicking buttons. And if you have Claude Code, it can literally do all of this for you.
 
 </details>
 
@@ -225,7 +224,7 @@ cd ai-strategy-factory
 # Run the setup script (works on Windows, macOS, Linux)
 python setup.py
 
-# Add your API keys to .env file
+# Add your OpenRouter API key to the .env file
 # Then run the web app
 python -m strategy_factory.webapp
 ```
@@ -237,14 +236,19 @@ Open **http://localhost:8888** and enter a company name!
 ## Features
 
 ### Research Engine
-- **Perplexity AI** for real-time company intelligence
+- **Perplexity Sonar** (via OpenRouter) for real-time company intelligence
 - 9-18 targeted queries per analysis
-- Automatic source aggregation
+- Automatic source aggregation from citations
 
 ### Document Synthesis
-- **Google Gemini 2.5 Flash** for document generation
+- **Google Gemini 2.5 Flash** (via OpenRouter) for document generation
 - 15 specialized deliverable templates
 - Consistent consulting-quality output
+
+### Single Provider, One API Key
+- All model calls flow through [OpenRouter](https://openrouter.ai/)
+- Swap between Perplexity / Gemini / other models without code changes
+- One bill, one usage dashboard
 
 ### Export Options
 - Markdown documents
@@ -272,7 +276,7 @@ Open **http://localhost:8888** and enter a company name!
 ┌─────────────────────────────────────────────────────────────────────┐
 │                    PHASE 1: RESEARCH                                 │
 │                                                                      │
-│   Perplexity AI queries:                                            │
+│   Perplexity Sonar (via OpenRouter) queries:                        │
 │   • Company overview & business model                               │
 │   • Technology stack & infrastructure                               │
 │   • Industry landscape & competitors                                │
@@ -287,7 +291,7 @@ Open **http://localhost:8888** and enter a company name!
 ┌─────────────────────────────────────────────────────────────────────┐
 │                    PHASE 2: SYNTHESIS                                │
 │                                                                      │
-│   Google Gemini generates:                                          │
+│   Google Gemini (via OpenRouter) generates:                         │
 │   • 15 markdown deliverables                                        │
 │   • Mermaid diagram code                                            │
 │   • Structured recommendations                                      │
@@ -360,8 +364,7 @@ Open **http://localhost:8888** and enter a company name!
 | Requirement | How to Get |
 |-------------|------------|
 | Python 3.9+ | [python.org](https://www.python.org/downloads/) |
-| Perplexity API Key | [perplexity.ai/settings/api](https://www.perplexity.ai/settings/api) |
-| Gemini API Key | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) |
+| OpenRouter API Key | [openrouter.ai/keys](https://openrouter.ai/keys) |
 
 ### Step-by-Step
 
@@ -385,14 +388,20 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-### Configure API Keys
+### Configure API Key
 
-Edit `.env` with your keys:
+Edit `.env` with your OpenRouter key. A single key gives the project access to
+both Perplexity Sonar (research) and Google Gemini (synthesis), plus any other
+model you may want to experiment with.
 
 ```env
-PERPLEXITY_API_KEY=pplx-xxxxxxxxxxxxxxxxxxxx
-GEMINI_API_KEY=AIzaSyxxxxxxxxxxxxxxxxxxxxxxxxx
+OPENROUTER_API_KEY=sk-or-v1-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
+
+If you want to swap the models being used (for example, try `google/gemini-2.5-pro`
+for higher-quality synthesis or `perplexity/sonar-pro` for deeper research),
+edit `strategy_factory/config.py` — the model names there are the OpenRouter
+model IDs.
 
 ---
 
@@ -468,11 +477,15 @@ ai-strategy-factory/
 
 ## API Costs
 
-| API | Model | Cost | Use Case |
-|-----|-------|------|----------|
-| Perplexity | sonar | $0.001/1K tokens | Quick research |
-| Perplexity | sonar-pro | $0.003/1K tokens | Deep research |
-| Gemini | 2.5-flash | $0.075/1M input | Document synthesis |
+All usage is billed through your single OpenRouter account. OpenRouter charges
+the underlying provider rate (no markup on most models) plus a small platform
+fee on credit top-ups.
+
+| OpenRouter Model | Provider Rate | Use Case |
+|------------------|---------------|----------|
+| `perplexity/sonar` | $0.001/1K tokens | Quick research |
+| `perplexity/sonar-pro` | $0.003/1K tokens | Deep research |
+| `google/gemini-2.5-flash` | $0.075/1M input tokens | Document synthesis |
 
 **Typical costs:**
 - Quick mode: **$0.02-0.05** per company
@@ -497,8 +510,9 @@ python -m strategy_factory.webapp --port 9000
 <summary><strong>API key errors</strong></summary>
 
 1. Ensure `.env` file exists in project root
-2. Check keys are correct (no extra spaces)
-3. Verify API accounts have credits
+2. Check the `OPENROUTER_API_KEY` line is correct (no extra spaces)
+3. Verify your OpenRouter account has credits at
+   [openrouter.ai/credits](https://openrouter.ai/credits)
 
 </details>
 
@@ -557,8 +571,9 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## Acknowledgments
 
-- [Perplexity AI](https://www.perplexity.ai/) - Research capabilities
-- [Google Gemini](https://ai.google.dev/) - Document synthesis
+- [OpenRouter](https://openrouter.ai/) - Unified model gateway
+- [Perplexity AI](https://www.perplexity.ai/) - Research capabilities (via OpenRouter)
+- [Google Gemini](https://ai.google.dev/) - Document synthesis (via OpenRouter)
 - [python-pptx](https://python-pptx.readthedocs.io/) - PowerPoint generation
 - [python-docx](https://python-docx.readthedocs.io/) - Word document generation
 

@@ -1,12 +1,12 @@
 # Core dependencies
-google-generativeai>=0.8.0
 python-dotenv>=1.0.0
 tenacity>=8.2.0
 tqdm>=4.66.0
 
 # AI Strategy Factory dependencies
 pydantic>=2.0.0
-perplexityai>=0.1.0
+# Perplexity and Gemini model calls are routed through OpenRouter via the
+# OpenAI-compatible HTTP API (using httpx), so no provider-specific SDKs.
 
 # Document generation
 python-docx>=1.1.0

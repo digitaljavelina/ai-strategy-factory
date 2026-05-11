@@ -73,11 +73,10 @@ def main():
     elif not env_file.exists():
         print("\n Creating .env file...")
         env_content = """# AI Strategy Factory - Environment Variables
-PERPLEXITY_API_KEY=your-api-key-here
-GEMINI_API_KEY=your-api-key-here
+OPENROUTER_API_KEY=your-openrouter-api-key-here
 """
         env_file.write_text(env_content)
-        print("  Done! Please edit .env with your API keys")
+        print("  Done! Please edit .env with your OpenRouter API key")
 
     # Print success message
     print("\n" + "=" * 60)
@@ -85,9 +84,9 @@ GEMINI_API_KEY=your-api-key-here
     print("=" * 60)
 
     print("\nNext steps:")
-    print(f"  1. Edit .env with your API keys:")
-    print(f"     - Get Perplexity API key: https://www.perplexity.ai/settings/api")
-    print(f"     - Get Gemini API key: https://aistudio.google.com/apikey")
+    print(f"  1. Edit .env with your OpenRouter API key:")
+    print(f"     - Get an OpenRouter key: https://openrouter.ai/keys")
+    print(f"     (one key gives access to Perplexity Sonar and Google Gemini)")
     print(f"\n  2. Activate the virtual environment:")
     print(f"     {activate_cmd}")
     print(f"\n  3. Run the web app:")

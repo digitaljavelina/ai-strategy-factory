@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-AI Strategy Factory generates comprehensive AI strategy deliverables for any company using Perplexity AI for research and Google Gemini for document synthesis.
+AI Strategy Factory generates comprehensive AI strategy deliverables for any company using Perplexity Sonar models for research and Google Gemini for document synthesis. Both providers are accessed through a single OpenRouter API key (no direct Perplexity or Google API access required).
 
 **What it produces:**
 - 15 strategic markdown documents
@@ -101,9 +101,12 @@ strategy_factory/
 
 Required in `.env`:
 ```
-PERPLEXITY_API_KEY=pplx-xxx
-GEMINI_API_KEY=AIzaSyxxx
+OPENROUTER_API_KEY=sk-or-v1-xxx
 ```
+
+Get a key at https://openrouter.ai/keys. One key gives the project access to
+both Perplexity Sonar (research) and Google Gemini (synthesis), routed via
+OpenRouter's OpenAI-compatible chat completions API.
 
 ## Output Structure
 
@@ -128,7 +131,7 @@ output/{company-slug}/
 
 **Port in use:** App auto-finds available port, or use `--port 9000`
 
-**Missing API keys:** Check `.env` file exists and has valid keys
+**Missing API key:** Check `.env` file exists and `OPENROUTER_API_KEY` is set
 
 **Tables not rendering:** Known issue with some Gemini outputs - being handled in `fix_malformed_tables()`
 

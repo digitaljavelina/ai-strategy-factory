@@ -1441,16 +1441,11 @@ def main():
     parser.add_argument("--host", default="0.0.0.0", help="Host to bind to (default: 0.0.0.0)")
     args = parser.parse_args()
 
-    # Check for API keys
-    missing_keys = []
-    if not os.getenv("PERPLEXITY_API_KEY"):
-        missing_keys.append("PERPLEXITY_API_KEY")
-    if not os.getenv("GEMINI_API_KEY"):
-        missing_keys.append("GEMINI_API_KEY")
-
-    if missing_keys:
-        print("Warning: Missing API keys:", ", ".join(missing_keys))
-        print("Set these in your .env file for full functionality.\n")
+    # Check for API key
+    if not os.getenv("OPENROUTER_API_KEY"):
+        print("Warning: Missing API key: OPENROUTER_API_KEY")
+        print("Set this in your .env file for full functionality.")
+        print("Get a key at https://openrouter.ai/keys\n")
 
     import webbrowser
 
