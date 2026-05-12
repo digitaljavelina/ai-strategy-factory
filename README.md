@@ -26,14 +26,14 @@
 
 Enter a company name → Get a complete AI strategy package:
 
-| Output | Description |
-|--------|-------------|
-| **15 Strategic Documents** | Tech inventory, pain points, roadmaps, ROI analysis |
-| **Architecture Diagrams** | Auto-generated Mermaid visualizations |
-| **Executive Presentations** | PowerPoint decks ready for stakeholders |
-| **Implementation Reports** | Detailed Word documents with recommendations |
+| Output                      | Description                                         |
+| --------------------------- | --------------------------------------------------- |
+| **15 Strategic Documents**  | Tech inventory, pain points, roadmaps, ROI analysis |
+| **Architecture Diagrams**   | Auto-generated Mermaid visualizations               |
+| **Executive Presentations** | PowerPoint decks ready for stakeholders             |
+| **Implementation Reports**  | Detailed Word documents with recommendations        |
 
-**Cost per analysis: ~$0.05-0.50** using Perplexity + Gemini APIs
+**Cost per analysis: ~$0.05-0.50** via a single OpenRouter API key
 
 ---
 
@@ -54,12 +54,12 @@ This tool is like having a consulting firm in a box. You type in a company name 
 
 ### What You Need (The Actual Requirements)
 
-| What | Why | How Long to Get |
-|------|-----|-----------------|
-| A computer | Windows, Mac, or Linux all work | You probably have this |
-| Python installed | The programming language this runs on | 5 minutes |
-| Two free API keys | To use Perplexity and Gemini AI | 10 minutes |
-| Claude Code (optional) | Makes everything 10x easier | 2 minutes |
+| What                   | Why                                   | How Long to Get        |
+| ---------------------- | ------------------------------------- | ---------------------- |
+| A computer             | Windows, Mac, or Linux all work       | You probably have this |
+| Python installed       | The programming language this runs on | 5 minutes              |
+| One OpenRouter API key | Unified access to Perplexity + Gemini | 5 minutes              |
+| Claude Code (optional) | Makes everything 10x easier           | 2 minutes              |
 
 ### The Absolute Easiest Way (Using Claude Code)
 
@@ -70,6 +70,7 @@ Clone the repo at https://github.com/promptadvisers/ai-strategy-factory and help
 ```
 
 Claude Code will:
+
 - Download all the files
 - Install everything needed
 - Help you get API keys
@@ -82,42 +83,41 @@ Claude Code will:
 #### Step 1: Install Python (5 minutes)
 
 **On Mac:**
+
 1. Open Terminal (search "Terminal" in Spotlight)
 2. Type: `python3 --version`
 3. If you see a version number, you're done!
 4. If not, go to [python.org/downloads](https://python.org/downloads) and download
 
 **On Windows:**
+
 1. Go to [python.org/downloads](https://python.org/downloads)
 2. Download and run the installer
 3. **IMPORTANT:** Check the box that says "Add Python to PATH"
 4. Click Install
 
-#### Step 2: Get Your API Keys (10 minutes)
+#### Step 2: Get Your API Key (5 minutes)
 
-You need two free API keys:
+You only need one key — OpenRouter routes both the Perplexity research calls and the Gemini synthesis calls for you.
 
-**Perplexity API Key:**
-1. Go to [perplexity.ai](https://perplexity.ai)
-2. Create an account (free)
-3. Go to Settings → API
-4. Click "Generate API Key"
-5. Copy it somewhere safe (looks like `pplx-abc123...`)
+**OpenRouter API Key:**
 
-**Gemini API Key:**
-1. Go to [aistudio.google.com/apikey](https://aistudio.google.com/apikey)
-2. Sign in with Google
-3. Click "Create API Key"
-4. Copy it somewhere safe (looks like `AIzaSy...`)
+1. Go to [openrouter.ai/keys](https://openrouter.ai/keys)
+2. Sign in (Google / GitHub / email all work)
+3. Click "Create Key"
+4. Copy it somewhere safe (looks like `sk-or-v1-...`)
+5. Add credits at [openrouter.ai/credits](https://openrouter.ai/credits) — $5 covers many analyses
 
 #### Step 3: Download This Project (2 minutes)
 
 **Option A - Download ZIP (easiest):**
+
 1. Click the green "Code" button at the top of this page
 2. Click "Download ZIP"
 3. Unzip the folder somewhere you can find it (like Desktop)
 
 **Option B - Use Git:**
+
 ```bash
 git clone https://github.com/promptadvisers/ai-strategy-factory.git
 ```
@@ -127,11 +127,13 @@ git clone https://github.com/promptadvisers/ai-strategy-factory.git
 1. Open Terminal (Mac) or Command Prompt (Windows)
 
 2. Navigate to the folder:
+
    ```bash
    cd Desktop/ai-strategy-factory   # or wherever you put it
    ```
 
 3. Run the setup:
+
    ```bash
    uv run python setup.py
    ```
@@ -178,20 +180,24 @@ Once you have the project set up, here are things you can ask Claude Code to do:
 ### What If Something Goes Wrong?
 
 **"Python not found"**
+
 - Make sure Python is installed (Step 1)
 - On Windows, make sure you checked "Add Python to PATH" during install
 - Try restarting your terminal/command prompt
 
 **"API key error"**
+
 - Double-check your `.env` file has the right keys
 - Make sure there are no extra spaces
 - Make sure the keys are on their own lines
 
 **"Module not found"**
+
 - Run `uv pip install -r requirements.txt` again
 - Make sure you're in the right folder
 
 **Still stuck?**
+
 - Open an issue on GitHub
 - Or ask Claude Code: "I'm getting this error: [paste error]. Help me fix it."
 
@@ -235,22 +241,26 @@ Open **http://localhost:8888** and enter a company name!
 ## Features
 
 ### Research Engine
+
 - **Perplexity AI** for real-time company intelligence
 - 9-18 targeted queries per analysis
 - Automatic source aggregation
 
 ### Document Synthesis
+
 - **Google Gemini 2.5 Flash** for document generation
 - 15 specialized deliverable templates
 - Consistent consulting-quality output
 
 ### Export Options
+
 - Markdown documents
 - PowerPoint presentations (PPTX)
 - Word reports (DOCX)
 - Architecture diagrams (PNG)
 
 ### User Experience
+
 - Beautiful web interface
 - Real-time progress tracking
 - Resume interrupted analyses
@@ -311,43 +321,48 @@ Open **http://localhost:8888** and enter a company name!
 ## Deliverables
 
 ### Strategic Assessment
-| # | Document | Description |
-|:-:|----------|-------------|
-| 1 | **Tech Inventory** | Current technology stack assessment |
-| 2 | **Pain Points** | Department-by-department analysis |
-| 3 | **Maturity Assessment** | AI readiness scoring (1-5 scale) |
-| 4 | **Mermaid Diagrams** | Current & future state architecture |
+
+|  #  | Document                | Description                         |
+| :-: | ----------------------- | ----------------------------------- |
+|  1  | **Tech Inventory**      | Current technology stack assessment |
+|  2  | **Pain Points**         | Department-by-department analysis   |
+|  3  | **Maturity Assessment** | AI readiness scoring (1-5 scale)    |
+|  4  | **Mermaid Diagrams**    | Current & future state architecture |
 
 ### Implementation Planning
-| # | Document | Description |
-|:-:|----------|-------------|
-| 5 | **Roadmap** | 30/60/90/180/360 day implementation plan |
-| 6 | **Quick Wins** | Low-effort, high-impact opportunities |
-| 7 | **Vendor Comparison** | Build vs buy framework |
-| 8 | **License Consolidation** | Software optimization recommendations |
-| 9 | **ROI Calculator** | Cost-benefit analysis with projections |
+
+|  #  | Document                  | Description                              |
+| :-: | ------------------------- | ---------------------------------------- |
+|  5  | **Roadmap**               | 30/60/90/180/360 day implementation plan |
+|  6  | **Quick Wins**            | Low-effort, high-impact opportunities    |
+|  7  | **Vendor Comparison**     | Build vs buy framework                   |
+|  8  | **License Consolidation** | Software optimization recommendations    |
+|  9  | **ROI Calculator**        | Cost-benefit analysis with projections   |
 
 ### Governance & Policy
-| # | Document | Description |
-|:-:|----------|-------------|
-| 10 | **AI Policy** | Acceptable use policy template |
-| 11 | **Data Governance** | Data management framework |
-| 12 | **Change Management** | Training and adoption playbook |
+
+|  #  | Document              | Description                    |
+| :-: | --------------------- | ------------------------------ |
+| 10  | **AI Policy**         | Acceptable use policy template |
+| 11  | **Data Governance**   | Data management framework      |
+| 12  | **Change Management** | Training and adoption playbook |
 
 ### Resources
-| # | Document | Description |
-|:-:|----------|-------------|
-| 13 | **Prompt Library** | Starter prompts by department |
-| 14 | **Use Case Library** | Department-specific AI applications |
-| 15 | **Glossary** | AI terms explained for stakeholders |
+
+|  #  | Document             | Description                         |
+| :-: | -------------------- | ----------------------------------- |
+| 13  | **Prompt Library**   | Starter prompts by department       |
+| 14  | **Use Case Library** | Department-specific AI applications |
+| 15  | **Glossary**         | AI terms explained for stakeholders |
 
 ### Executive Outputs
-| Type | File | Description |
-|------|------|-------------|
-| PPTX | Executive Summary | Board-ready presentation |
-| PPTX | Full Findings | Detailed analysis deck |
-| DOCX | Strategy Report | Comprehensive written report |
-| DOCX | Statement of Work | Implementation proposal |
+
+| Type | File              | Description                  |
+| ---- | ----------------- | ---------------------------- |
+| PPTX | Executive Summary | Board-ready presentation     |
+| PPTX | Full Findings     | Detailed analysis deck       |
+| DOCX | Strategy Report   | Comprehensive written report |
+| DOCX | Statement of Work | Implementation proposal      |
 
 ---
 
@@ -355,11 +370,10 @@ Open **http://localhost:8888** and enter a company name!
 
 ### Prerequisites
 
-| Requirement | How to Get |
-|-------------|------------|
-| Python 3.9+ | [python.org](https://www.python.org/downloads/) |
-| Perplexity API Key | [perplexity.ai/settings/api](https://www.perplexity.ai/settings/api) |
-| Gemini API Key | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) |
+| Requirement        | How to Get                                       |
+| ------------------ | ------------------------------------------------ |
+| Python 3.9+        | [python.org](https://www.python.org/downloads/)  |
+| OpenRouter API Key | [openrouter.ai/keys](https://openrouter.ai/keys) |
 
 ### Step-by-Step
 
@@ -465,15 +479,20 @@ ai-strategy-factory/
 
 ## API Costs
 
-| API | Model | Cost | Use Case |
-|-----|-------|------|----------|
-| Perplexity | sonar | $0.001/1K tokens | Quick research |
-| Perplexity | sonar-pro | $0.003/1K tokens | Deep research |
-| Gemini | 2.5-flash | $0.075/1M input | Document synthesis |
+All calls route through OpenRouter, which passes provider pricing through at cost. Models used:
+
+| Model (OpenRouter id)     | Use Case           |
+| ------------------------- | ------------------ |
+| `perplexity/sonar`        | Quick research     |
+| `perplexity/sonar-pro`    | Deep research      |
+| `google/gemini-2.5-flash` | Document synthesis |
 
 **Typical costs:**
+
 - Quick mode: **$0.02-0.05** per company
 - Comprehensive mode: **$0.30-0.80** per company
+
+See [openrouter.ai/models](https://openrouter.ai/models) for current per-token pricing.
 
 ---
 
