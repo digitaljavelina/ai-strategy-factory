@@ -133,8 +133,7 @@ git clone https://github.com/promptadvisers/ai-strategy-factory.git
 
 3. Run the setup:
    ```bash
-   python setup.py    # On Windows
-   python3 setup.py   # On Mac
+   uv run python setup.py
    ```
 
 4. Add your API keys:
@@ -145,8 +144,7 @@ git clone https://github.com/promptadvisers/ai-strategy-factory.git
 #### Step 5: Run It! (1 minute)
 
 ```bash
-python -m strategy_factory.webapp    # Windows
-python3 -m strategy_factory.webapp   # Mac
+uv run python -m strategy_factory.webapp
 ```
 
 Your browser will open to **http://localhost:8888**
@@ -223,11 +221,11 @@ git clone https://github.com/promptadvisers/ai-strategy-factory.git
 cd ai-strategy-factory
 
 # Run the setup script (works on Windows, macOS, Linux)
-python setup.py
+uv run python setup.py
 
 # Add your API keys to .env file
 # Then run the web app
-python -m strategy_factory.webapp
+uv run python -m strategy_factory.webapp
 ```
 
 Open **http://localhost:8888** and enter a company name!
@@ -400,7 +398,7 @@ OPENROUTER_API_KEY=sk-or-xxxxxxxxxxxxxxxxxxxx
 ### Web Interface (Recommended)
 
 ```bash
-python -m strategy_factory.webapp
+uv run python -m strategy_factory.webapp
 ```
 
 Then open **http://localhost:8888**
@@ -409,22 +407,22 @@ Then open **http://localhost:8888**
 
 ```bash
 # Quick analysis (~$0.05, 2-3 minutes)
-python -m strategy_factory.main run "Stripe"
+uv run python -m strategy_factory.main run "Stripe"
 
 # With context
-python -m strategy_factory.main run "Stripe" --context "B2B payments, fintech"
+uv run python -m strategy_factory.main run "Stripe" --context "B2B payments, fintech"
 
 # Comprehensive analysis (~$0.50, 5-10 minutes)
-python -m strategy_factory.main run "Stripe" --mode comprehensive
+uv run python -m strategy_factory.main run "Stripe" --mode comprehensive
 
 # Check status
-python -m strategy_factory.main status "Stripe"
+uv run python -m strategy_factory.main status "Stripe"
 
 # Resume interrupted analysis
-python -m strategy_factory.main resume "Stripe"
+uv run python -m strategy_factory.main resume "Stripe"
 
 # List all analyses
-python -m strategy_factory.main list
+uv run python -m strategy_factory.main list
 ```
 
 ---
@@ -487,7 +485,7 @@ ai-strategy-factory/
 The app automatically finds an available port. Or specify one:
 
 ```bash
-python -m strategy_factory.webapp --port 9000
+uv run python -m strategy_factory.webapp --port 9000
 ```
 
 </details>
