@@ -20,10 +20,10 @@ AI Strategy Factory generates comprehensive AI strategy deliverables for any com
 python setup.py
 
 # Option 2: Manual setup
-python3 -m venv venv
+uv venv
 source venv/bin/activate  # macOS/Linux
 # OR: .\venv\Scripts\activate  # Windows
-pip install -r requirements.txt
+uv pip install -r requirements.txt
 cp .env.example .env
 # Edit .env with your API keys
 ```

@@ -190,7 +190,7 @@ Once you have the project set up, here are things you can ask Claude Code to do:
 - Make sure the keys are on their own lines
 
 **"Module not found"**
-- Run `pip install -r requirements.txt` again
+- Run `uv pip install -r requirements.txt` again
 - Make sure you're in the right folder
 
 **Still stuck?**
@@ -371,7 +371,7 @@ git clone https://github.com/promptadvisers/ai-strategy-factory.git
 cd ai-strategy-factory
 
 # 2. Create virtual environment
-python3 -m venv venv
+uv venv
 
 # 3. Activate it
 source venv/bin/activate        # macOS/Linux
@@ -379,7 +379,7 @@ source venv/bin/activate        # macOS/Linux
 .\venv\Scripts\activate         # Windows
 
 # 4. Install dependencies
-pip install -r requirements.txt
+uv pip install -r requirements.txt
 
 # 5. Set up environment
 cp .env.example .env
@@ -511,7 +511,7 @@ source venv/bin/activate  # macOS/Linux
 .\venv\Scripts\activate   # Windows
 
 # Reinstall dependencies
-pip install -r requirements.txt
+uv pip install -r requirements.txt
 ```
 
 </details>

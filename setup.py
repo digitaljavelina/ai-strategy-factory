@@ -44,23 +44,18 @@ def main():
     # Create virtual environment
     venv_dir = project_dir / "venv"
     if not venv_dir.exists():
-        run_command(f"{sys.executable} -m venv venv", "Creating virtual environment")
+        run_command("uv venv venv", "Creating virtual environment")
     else:
         print("\nVirtual environment already exists")
 
-    # Determine activation command and pip path
+    # Determine activation command
     if platform.system() == "Windows":
-        pip_path = venv_dir / "Scripts" / "pip"
-        python_path = venv_dir / "Scripts" / "python"
         activate_cmd = ".\\venv\\Scripts\\activate"
     else:
-        pip_path = venv_dir / "bin" / "pip"
-        python_path = venv_dir / "bin" / "python"
         activate_cmd = "source venv/bin/activate"
 
     # Install dependencies
-    run_command(f'"{pip_path}" install --upgrade pip', "Upgrading pip")
-    run_command(f'"{pip_path}" install -r requirements.txt', "Installing dependencies")
+    run_command("uv pip install -r requirements.txt", "Installing dependencies")
 
     # Create .env file if it doesn't exist
     env_file = project_dir / ".env"
