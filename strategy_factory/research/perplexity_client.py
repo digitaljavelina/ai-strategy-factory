@@ -164,8 +164,38 @@ class PerplexityClient:
         input_tokens: int = 500,
         output_tokens: int = 1000,
     ) -> float:
+        """Fallback token-based cost estimate. Does not include search-request
+        fees or reasoning tokens — use _cost_from_response to read the real
+        billed cost from OpenRouter when available."""
         input_cost, output_cost = PERPLEXITY_COSTS.get(model, (0.001, 0.001))
         return (input_tokens / 1000 * input_cost) + (output_tokens / 1000 * output_cost)
+
+    def _cost_from_response(self, response: Any, model: PerplexityModel) -> float:
+        """
+        Read the real billed cost from an OpenRouter response.
+
+        With `extra_body={"usage": {"include": True}}`, OpenRouter returns a
+        `cost` field on the usage object (USD). That number includes every
+        surcharge OpenRouter passes through — input/output tokens, reasoning
+        tokens for reasoning models, and per-request search fees for sonar
+        models — so it matches the dashboard.
+
+        Falls back to the token-based estimate if the field is absent.
+        """
+        usage = getattr(response, "usage", None)
+        if usage is not None:
+            real_cost = getattr(usage, "cost", None)
+            if real_cost is None and hasattr(usage, "model_dump"):
+                real_cost = usage.model_dump().get("cost")
+            if isinstance(real_cost, (int, float)) and real_cost > 0:
+                return float(real_cost)
+
+            # Estimate fallback using whatever token counts we have.
+            prompt_tokens = getattr(usage, "prompt_tokens", None) or 500
+            completion_tokens = getattr(usage, "completion_tokens", None) or 1000
+            return self._estimate_cost(model, prompt_tokens, completion_tokens)
+
+        return self._estimate_cost(model)
 
     @staticmethod
     def _to_openrouter_model_id(model: PerplexityModel) -> str:
@@ -298,7 +328,8 @@ class PerplexityClient:
         elif search_domain_filter:
             web_search_options["search_domain_filter"] = search_domain_filter[:20]
 
-        extra_body: Dict[str, Any] = {}
+        # Always ask OpenRouter to include real cost in the response.
+        extra_body: Dict[str, Any] = {"usage": {"include": True}}
         if web_search_options:
             extra_body["web_search_options"] = web_search_options
 
@@ -349,16 +380,10 @@ class PerplexityClient:
 
                 results = self._parse_response_to_results(response, max_results)
 
-                # Prefer real usage if returned
-                usage = getattr(response, "usage", None)
-                if usage and getattr(usage, "prompt_tokens", None):
-                    cost = self._estimate_cost(
-                        model,
-                        input_tokens=usage.prompt_tokens,
-                        output_tokens=usage.completion_tokens or 1000,
-                    )
-                else:
-                    cost = self._estimate_cost(model)
+                # Prefer OpenRouter's actual cost (includes search fees and
+                # reasoning tokens). Fall back to token-based estimate if the
+                # cost field is missing.
+                cost = self._cost_from_response(response, model)
 
                 self.total_cost += cost
                 self.query_count += 1

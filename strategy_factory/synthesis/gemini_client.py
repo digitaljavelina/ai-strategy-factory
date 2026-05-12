@@ -143,12 +143,20 @@ class GeminiClient:
                     messages=messages,
                     temperature=temperature,
                     max_tokens=max_output_tokens,
+                    extra_body={"usage": {"include": True}},
                 )
 
                 content = response.choices[0].message.content or ""
 
-                # Prefer real token usage from the API; fall back to estimate.
+                # Prefer OpenRouter's real billed cost when available, fall
+                # back to token-based estimate otherwise.
                 usage = getattr(response, "usage", None)
+                real_cost = None
+                if usage is not None:
+                    real_cost = getattr(usage, "cost", None)
+                    if real_cost is None and hasattr(usage, "model_dump"):
+                        real_cost = usage.model_dump().get("cost")
+
                 if usage and getattr(usage, "prompt_tokens", None):
                     input_tokens = usage.prompt_tokens
                     output_tokens = usage.completion_tokens or self._count_tokens(content)
@@ -158,7 +166,10 @@ class GeminiClient:
                         input_tokens += self._count_tokens(system_instruction)
                     output_tokens = self._count_tokens(content)
 
-                cost = self._estimate_cost(input_tokens, output_tokens)
+                if isinstance(real_cost, (int, float)) and real_cost > 0:
+                    cost = float(real_cost)
+                else:
+                    cost = self._estimate_cost(input_tokens, output_tokens)
 
                 self.total_cost += cost
                 self.total_input_tokens += input_tokens
