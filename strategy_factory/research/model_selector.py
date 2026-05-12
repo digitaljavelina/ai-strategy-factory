@@ -47,7 +47,7 @@ class ModelSelector:
         },
         QueryCategory.COMPETITORS: {
             ResearchMode.QUICK: PerplexityModel.SONAR,
-            ResearchMode.COMPREHENSIVE: PerplexityModel.SONAR_DEEP_RESEARCH,
+            ResearchMode.COMPREHENSIVE: PerplexityModel.SONAR_PRO,
         },
         QueryCategory.TECHNOLOGY: {
             ResearchMode.QUICK: PerplexityModel.SONAR,
@@ -55,7 +55,7 @@ class ModelSelector:
         },
         QueryCategory.AI_INITIATIVES: {
             ResearchMode.QUICK: PerplexityModel.SONAR,
-            ResearchMode.COMPREHENSIVE: PerplexityModel.SONAR_DEEP_RESEARCH,
+            ResearchMode.COMPREHENSIVE: PerplexityModel.SONAR_PRO,
         },
         QueryCategory.REGULATORY: {
             ResearchMode.QUICK: PerplexityModel.SONAR,
@@ -131,14 +131,11 @@ class ModelSelector:
         selected_model = base_model
         reason = f"Default model for {category.value} in {self.mode.value} mode"
         
-        if self.mode == ResearchMode.COMPREHENSIVE:
-            should_upgrade = self.TIER_UPGRADES.get(info_tier, False)
-            
-            if should_upgrade and base_model == PerplexityModel.SONAR_PRO:
-                # Upgrade to deep research for private companies
-                if PerplexityModel.SONAR_DEEP_RESEARCH in self.available_models:
-                    selected_model = PerplexityModel.SONAR_DEEP_RESEARCH
-                    reason = f"Upgraded to deep research for {info_tier.value} company"
+        # Note: previously, COMPREHENSIVE mode upgraded private/stealth companies
+        # to SONAR_DEEP_RESEARCH here. That model autonomously chains many web
+        # searches and emits long outputs + reasoning tokens, costing $1-5 per
+        # call. It was making "comprehensive" runs cost $6-15 instead of the
+        # advertised sub-dollar range, so the upgrade path is disabled.
         
         # Determine fallback
         fallback = PerplexityModel.SONAR if selected_model != PerplexityModel.SONAR else None

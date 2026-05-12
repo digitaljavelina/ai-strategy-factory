@@ -34,8 +34,8 @@ RESEARCH_MODE_MODELS: Dict[ResearchMode, List[PerplexityModel]] = {
     ResearchMode.COMPREHENSIVE: [
         PerplexityModel.SONAR,
         PerplexityModel.SONAR_PRO,
-        PerplexityModel.SONAR_DEEP_RESEARCH
-    ]
+        PerplexityModel.SONAR_REASONING,
+    ],
 }
 
 # Estimated costs per 1K tokens (input/output)

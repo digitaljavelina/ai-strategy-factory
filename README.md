@@ -33,7 +33,7 @@ Enter a company name → Get a complete AI strategy package:
 | **Executive Presentations** | PowerPoint decks ready for stakeholders             |
 | **Implementation Reports**  | Detailed Word documents with recommendations        |
 
-**Cost per analysis: ~$0.05-0.50** via a single OpenRouter API key
+**Cost per analysis: ~$0.05 (quick) to ~$1.50 (comprehensive)** via a single OpenRouter API key
 
 ---
 
@@ -487,10 +487,10 @@ All calls route through OpenRouter, which passes provider pricing through at cos
 | `perplexity/sonar-pro`    | Deep research      |
 | `google/gemini-2.5-flash` | Document synthesis |
 
-**Typical costs:**
+**Typical costs (at current OpenRouter prices, May 2026):**
 
-- Quick mode: **$0.02-0.05** per company
-- Comprehensive mode: **$0.30-0.80** per company
+- Quick mode: **~$0.05-0.20** per company (sonar + Gemini synthesis)
+- Comprehensive mode: **~$0.50-1.50** per company (sonar-pro + sonar-reasoning + Gemini synthesis)
 
 See [openrouter.ai/models](https://openrouter.ai/models) for current per-token pricing.
 

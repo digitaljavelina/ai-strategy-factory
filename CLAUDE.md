@@ -142,5 +142,11 @@ output/{company-slug}/
 
 ## Cost Estimates
 
-- Quick mode: ~$0.05 per company
-- Comprehensive mode: ~$0.50 per company
+(At current OpenRouter prices, May 2026.)
+
+- Quick mode: ~$0.05-0.20 per company
+- Comprehensive mode: ~$0.50-1.50 per company
+
+Note: `sonar-deep-research` is intentionally excluded from comprehensive mode
+(`config.py` `RESEARCH_MODE_MODELS`). It runs autonomous multi-step research
+that costs $1-5 per call, which would push comprehensive runs to $6-15+.
