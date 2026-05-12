@@ -1,19 +1,23 @@
 """
-Gemini API client wrapper with retry logic.
+Gemini API client wrapper (via OpenRouter) with retry logic.
 
-Provides a robust interface for making Gemini API calls
-with automatic retries, exponential backoff, and cost tracking.
+Routes Gemini calls through OpenRouter's OpenAI-compatible endpoint so the
+project only needs a single OPENROUTER_API_KEY. Preserves the SynthesisResult
+contract so the rest of the synthesis pipeline is unchanged.
 """
 
 import os
 import time
 from datetime import datetime
-from typing import Optional, Dict, Any, List
+from typing import Any, Dict, Optional
 from dataclasses import dataclass
 
-import google.generativeai as genai
+from openai import OpenAI
 
 from ..config import GEMINI_MODEL, GEMINI_REQUEST_DELAY, RETRY_CONFIG
+
+
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 
 
 @dataclass
@@ -30,19 +34,21 @@ class SynthesisResult:
 
 class GeminiClient:
     """
-    Wrapper for Gemini API with retry logic.
-    
+    Wrapper for Gemini (via OpenRouter) with retry logic.
+
     Features:
+    - OpenAI-compatible chat completions through OpenRouter
     - Automatic retry with exponential backoff
     - Cost estimation and tracking
     - Rate limiting
     - Token counting
     """
-    
-    # Gemini 2.5 Flash pricing (per 1M tokens)
-    COST_PER_1M_INPUT = 0.075  # $0.075 per 1M input tokens
-    COST_PER_1M_OUTPUT = 0.30  # $0.30 per 1M output tokens
-    
+
+    # Gemini 2.5 Flash pricing through OpenRouter (per 1M tokens, USD).
+    # OpenRouter passes through provider pricing with no markup for direct routes.
+    COST_PER_1M_INPUT = 0.075
+    COST_PER_1M_OUTPUT = 0.30
+
     def __init__(
         self,
         api_key: Optional[str] = None,
@@ -50,47 +56,53 @@ class GeminiClient:
     ):
         """
         Initialize the Gemini client.
-        
+
         Args:
-            api_key: Gemini API key. If not provided, uses GEMINI_API_KEY env var.
-            model_name: Model to use for synthesis.
+            api_key: OpenRouter API key. If not provided, uses OPENROUTER_API_KEY env var.
+            model_name: Model to use for synthesis (config GEMINI_MODEL is the bare
+                model id; we prefix with the OpenRouter provider slug here).
         """
-        self.api_key = api_key or os.getenv("GEMINI_API_KEY")
+        self.api_key = api_key or os.getenv("OPENROUTER_API_KEY")
         if not self.api_key:
-            raise ValueError("GEMINI_API_KEY not found in environment variables")
-        
-        genai.configure(api_key=self.api_key)
-        self.model_name = model_name
-        self.model = genai.GenerativeModel(model_name)
-        
+            raise ValueError("OPENROUTER_API_KEY not found in environment variables")
+
+        self.client = OpenAI(api_key=self.api_key, base_url=OPENROUTER_BASE_URL)
+        self.model_name = self._to_openrouter_model_id(model_name)
+
         # Cost tracking
         self.total_cost = 0.0
         self.total_input_tokens = 0
         self.total_output_tokens = 0
         self.request_count = 0
-        
+
         # Rate limiting
         self.last_request_time = 0.0
         self.min_request_interval = GEMINI_REQUEST_DELAY
-    
+
+    @staticmethod
+    def _to_openrouter_model_id(model_name: str) -> str:
+        """Map bare Gemini ids (e.g. 'gemini-2.5-flash') to OpenRouter ids ('google/gemini-2.5-flash')."""
+        if "/" in model_name:
+            return model_name
+        return f"google/{model_name}"
+
     def _rate_limit(self) -> None:
         """Apply rate limiting between requests."""
         elapsed = time.time() - self.last_request_time
         if elapsed < self.min_request_interval:
             time.sleep(self.min_request_interval - elapsed)
         self.last_request_time = time.time()
-    
+
     def _estimate_cost(self, input_tokens: int, output_tokens: int) -> float:
         """Estimate the cost of a request."""
         input_cost = (input_tokens / 1_000_000) * self.COST_PER_1M_INPUT
         output_cost = (output_tokens / 1_000_000) * self.COST_PER_1M_OUTPUT
         return input_cost + output_cost
-    
+
     def _count_tokens(self, text: str) -> int:
-        """Estimate token count for text."""
-        # Rough estimate: ~4 characters per token
+        """Rough token estimate when the API does not return usage."""
         return len(text) // 4
-    
+
     def generate(
         self,
         prompt: str,
@@ -99,14 +111,14 @@ class GeminiClient:
         max_output_tokens: int = 8192,
     ) -> SynthesisResult:
         """
-        Generate content using Gemini.
-        
+        Generate content using Gemini via OpenRouter.
+
         Args:
             prompt: The prompt to send.
             system_instruction: Optional system instruction.
             temperature: Sampling temperature (0-1).
             max_output_tokens: Maximum tokens in response.
-        
+
         Returns:
             SynthesisResult with generated content.
         """
@@ -114,52 +126,45 @@ class GeminiClient:
         delay = RETRY_CONFIG["initial_delay"]
         max_delay = RETRY_CONFIG["max_delay"]
         backoff = RETRY_CONFIG["backoff_multiplier"]
-        
+
+        messages = []
+        if system_instruction:
+            messages.append({"role": "system", "content": system_instruction})
+        messages.append({"role": "user", "content": prompt})
+
         last_error = None
-        
+
         for attempt in range(max_retries):
             try:
                 self._rate_limit()
-                
-                # Configure generation
-                generation_config = genai.GenerationConfig(
+
+                response = self.client.chat.completions.create(
+                    model=self.model_name,
+                    messages=messages,
                     temperature=temperature,
-                    max_output_tokens=max_output_tokens,
+                    max_tokens=max_output_tokens,
                 )
-                
-                # Create model with system instruction if provided
-                if system_instruction:
-                    model = genai.GenerativeModel(
-                        self.model_name,
-                        system_instruction=system_instruction,
-                    )
+
+                content = response.choices[0].message.content or ""
+
+                # Prefer real token usage from the API; fall back to estimate.
+                usage = getattr(response, "usage", None)
+                if usage and getattr(usage, "prompt_tokens", None):
+                    input_tokens = usage.prompt_tokens
+                    output_tokens = usage.completion_tokens or self._count_tokens(content)
                 else:
-                    model = self.model
-                
-                # Generate response
-                response = model.generate_content(
-                    prompt,
-                    generation_config=generation_config,
-                )
-                
-                # Extract content
-                content = response.text
-                
-                # Estimate tokens
-                input_tokens = self._count_tokens(prompt)
-                if system_instruction:
-                    input_tokens += self._count_tokens(system_instruction)
-                output_tokens = self._count_tokens(content)
-                
-                # Calculate cost
+                    input_tokens = self._count_tokens(prompt)
+                    if system_instruction:
+                        input_tokens += self._count_tokens(system_instruction)
+                    output_tokens = self._count_tokens(content)
+
                 cost = self._estimate_cost(input_tokens, output_tokens)
-                
-                # Update tracking
+
                 self.total_cost += cost
                 self.total_input_tokens += input_tokens
                 self.total_output_tokens += output_tokens
                 self.request_count += 1
-                
+
                 return SynthesisResult(
                     content=content,
                     model_used=self.model_name,
@@ -168,14 +173,14 @@ class GeminiClient:
                     completion_tokens=output_tokens,
                     cost_estimate=cost,
                 )
-                
+
             except Exception as e:
                 last_error = e
                 if attempt < max_retries - 1:
                     print(f"Retry {attempt + 1}/{max_retries} after error: {e}")
                     time.sleep(delay)
                     delay = min(delay * backoff, max_delay)
-        
+
         # All retries failed
         return SynthesisResult(
             content="",
@@ -186,39 +191,27 @@ class GeminiClient:
             cost_estimate=0.0,
             error=str(last_error),
         )
-    
+
     def generate_with_context(
         self,
         prompt: str,
-        context: Dict[str, Any],
+        context: dict,
         system_instruction: Optional[str] = None,
         temperature: float = 0.7,
     ) -> SynthesisResult:
-        """
-        Generate content with structured context.
-        
-        Args:
-            prompt: The prompt template.
-            context: Context dict to format into prompt.
-            system_instruction: Optional system instruction.
-            temperature: Sampling temperature.
-        
-        Returns:
-            SynthesisResult with generated content.
-        """
-        # Format prompt with context
+        """Generate content with a context dict formatted into the prompt template."""
         formatted_prompt = prompt
         for key, value in context.items():
             placeholder = f"{{{key}}}"
             if placeholder in formatted_prompt:
                 formatted_prompt = formatted_prompt.replace(placeholder, str(value))
-        
+
         return self.generate(
             prompt=formatted_prompt,
             system_instruction=system_instruction,
             temperature=temperature,
         )
-    
+
     def _fix_malformed_tables(self, content: str) -> str:
         """Fix malformed markdown tables with overly long separator rows."""
         import re
@@ -229,27 +222,20 @@ class GeminiClient:
         while i < len(lines):
             line = lines[i]
 
-            # Check if this looks like a table header row (has multiple | chars)
             if line.count('|') >= 2 and not re.match(r'^\s*\|[\s\-:]+\|', line):
-                # This might be a header row, count columns
                 cols = [c.strip() for c in line.split('|')]
                 cols = [c for c in cols if c]
                 num_cols = len(cols)
 
-                if num_cols >= 2:
-                    # Check if next line is a malformed separator
-                    if i + 1 < len(lines):
-                        next_line = lines[i + 1]
-                        # If separator line is too long (malformed), fix it
-                        if len(next_line) > 200 and '-' in next_line:
-                            # Create a proper separator
-                            separator = '|' + '|'.join([' --- ' for _ in range(num_cols)]) + '|'
-                            fixed_lines.append(line)
-                            fixed_lines.append(separator)
-                            i += 2
-                            continue
+                if num_cols >= 2 and i + 1 < len(lines):
+                    next_line = lines[i + 1]
+                    if len(next_line) > 200 and '-' in next_line:
+                        separator = '|' + '|'.join([' --- ' for _ in range(num_cols)]) + '|'
+                        fixed_lines.append(line)
+                        fixed_lines.append(separator)
+                        i += 2
+                        continue
 
-            # Skip extremely long lines (likely malformed)
             if len(line) > 500:
                 i += 1
                 continue
@@ -265,16 +251,8 @@ class GeminiClient:
         system_instruction: Optional[str] = None,
     ) -> SynthesisResult:
         """
-        Generate markdown content.
-
-        Args:
-            prompt: The prompt.
-            system_instruction: Optional system instruction.
-
-        Returns:
-            SynthesisResult with markdown content.
+        Generate markdown content, with formatting guidance and table post-processing.
         """
-        # Add markdown formatting instruction
         markdown_instruction = """
 You are generating professional consulting documentation in Markdown format.
 Follow these formatting guidelines:
@@ -294,17 +272,16 @@ Follow these formatting guidelines:
         result = self.generate(
             prompt=prompt,
             system_instruction=full_instruction,
-            temperature=0.5,  # Lower temperature for more consistent formatting
+            temperature=0.5,
         )
 
-        # Post-process to fix any malformed tables
         if result.content:
             result.content = self._fix_malformed_tables(result.content)
 
         return result
-    
+
     def get_cost_summary(self) -> Dict[str, Any]:
-        """Get a summary of API usage and costs."""
+        """Summary of API usage and costs."""
         return {
             "total_cost": round(self.total_cost, 4),
             "total_input_tokens": self.total_input_tokens,

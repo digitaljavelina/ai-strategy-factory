@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 AI Strategy Factory generates comprehensive AI strategy deliverables for any company using Perplexity AI for research and Google Gemini for document synthesis.
 
 **What it produces:**
+
 - 15 strategic markdown documents
 - 2 PowerPoint presentations
 - 2 Word documents
@@ -15,6 +16,7 @@ AI Strategy Factory generates comprehensive AI strategy deliverables for any com
 ## Quick Commands
 
 ### Setup (First Time)
+
 ```bash
 # Option 1: Automated setup
 python setup.py
@@ -29,6 +31,7 @@ cp .env.example .env
 ```
 
 ### Run the Web App
+
 ```bash
 source venv/bin/activate  # macOS/Linux
 python -m strategy_factory.webapp
@@ -36,6 +39,7 @@ python -m strategy_factory.webapp
 ```
 
 ### Run via CLI
+
 ```bash
 # Full pipeline for a company
 python -m strategy_factory.main run "Company Name"
@@ -100,10 +104,14 @@ strategy_factory/
 ## Environment Variables
 
 Required in `.env`:
+
 ```
-PERPLEXITY_API_KEY=pplx-xxx
-GEMINI_API_KEY=AIzaSyxxx
+OPENROUTER_API_KEY=sk-or-xxx
 ```
+
+Both Perplexity (research) and Gemini (synthesis) are accessed through
+OpenRouter's OpenAI-compatible endpoint, so a single key drives the whole
+pipeline. Get a key at https://openrouter.ai/keys.
 
 ## Output Structure
 
