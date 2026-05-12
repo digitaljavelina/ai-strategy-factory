@@ -390,8 +390,7 @@ cp .env.example .env
 Edit `.env` with your keys:
 
 ```env
-PERPLEXITY_API_KEY=pplx-xxxxxxxxxxxxxxxxxxxx
-GEMINI_API_KEY=AIzaSyxxxxxxxxxxxxxxxxxxxxxxxxx
+OPENROUTER_API_KEY=sk-or-xxxxxxxxxxxxxxxxxxxx
 ```
 
 ---
